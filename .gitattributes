@@ -1,0 +1,4 @@
+# Keep line endings identical between WSL and Windows checkouts. A notebook is JSON
+# that tooling rewrites wholesale, so CRLF churn would produce noisy diffs.
+* text=auto eol=lf
+*.ipynb text eol=lf
