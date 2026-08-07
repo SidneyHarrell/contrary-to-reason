@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Full circuits — reading structure instead of norms</title>
+<style>
+.viz-root{color-scheme:light;--surface-1:#fcfcfb;--surface-2:#f4f3f0;--border:#dedcd6;--text-primary:#0b0b0b;
+ --text-secondary:#52514e;--text-muted:#7c7a74;--series-1:#2a78d6;--series-2:#eb6834;}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])) .viz-root{color-scheme:dark;
+ --surface-1:#1a1a19;--surface-2:#232322;--border:#3a3a37;--text-primary:#fff;--text-secondary:#c3c2b7;
+ --text-muted:#8e8d84;--series-1:#3987e5;--series-2:#d95926;}}
+:root[data-theme="dark"] .viz-root{color-scheme:dark;--surface-1:#1a1a19;--surface-2:#232322;--border:#3a3a37;
+ --text-primary:#fff;--text-secondary:#c3c2b7;--text-muted:#8e8d84;--series-1:#3987e5;--series-2:#d95926;}
+*{box-sizing:border-box} body{margin:0;background:var(--surface-1)}
+.viz-root{background:var(--surface-1);color:var(--text-primary);padding:22px 26px 40px;min-height:100vh;
+ font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+h1{font-size:19px;margin:0 0 4px;font-weight:650;letter-spacing:-.01em}
+.sub{color:var(--text-secondary);font-size:13px;margin:0 0 16px;max-width:82ch}
+.sub b{color:var(--text-primary)}
+.bar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:11px 13px;background:var(--surface-2);
+ border:1px solid var(--border);border-radius:9px;margin-bottom:16px}
+.grp{display:flex;gap:4px;align-items:center}
+.grp>label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-right:4px}
+button{font:inherit;font-size:12.5px;padding:4px 11px;border-radius:6px;border:1px solid var(--border);
+ background:var(--surface-1);color:var(--text-secondary);cursor:pointer}
+button[aria-pressed="true"]{background:var(--series-1);border-color:var(--series-1);color:#fff;font-weight:600}
+input[type=range]{width:250px;accent-color:var(--series-1)}
+.step{font-variant-numeric:tabular-nums;font-weight:600;min-width:120px}
+.wrap{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+@media(max-width:1000px){.wrap{grid-template-columns:1fr}}
+.card{background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:14px 16px 13px}
+.card h2{font-size:13px;margin:0 0 2px;font-weight:650}
+.card p{font-size:11.5px;color:var(--text-muted);margin:0 0 10px}
+.gw{display:inline-block}
+.cband,.chead{display:flex}
+.cband>div,.chead>div{text-align:center;font-size:9.5px;color:var(--text-muted);flex:none}
+.cband>div{font-size:10px;font-weight:650;color:var(--text-secondary);border-bottom:1.5px solid var(--border);
+ margin-bottom:2px;padding-bottom:1px}
+.rw{display:flex;align-items:flex-start}
+.rband,.rhead{display:flex;flex-direction:column;flex:none}
+.rband>div,.rhead>div{display:flex;align-items:center;justify-content:flex-end;font-size:9.5px;
+ color:var(--text-muted);flex:none}
+.rband>div{font-size:10px;font-weight:650;color:var(--text-secondary);border-right:1.5px solid var(--border);
+ margin-right:3px;padding-right:3px;writing-mode:vertical-rl;transform:rotate(180deg);justify-content:center}
+.rhead>div{padding-right:5px}
+.blank{position:absolute;pointer-events:none;background:repeating-linear-gradient(45deg,
+ transparent,transparent 4px,var(--border) 4px,var(--border) 5px);opacity:.5}
+.tilewrap{position:relative;display:inline-block;border:1px solid var(--border);border-radius:5px;overflow:hidden}
+.tilewrap img{display:block;image-rendering:pixelated}
+.sel{position:absolute;border:2.5px solid var(--text-primary);border-radius:3px;pointer-events:none}
+.hit{position:absolute;cursor:pointer}
+.hit:hover{background:rgba(127,127,127,.22)}
+svg{display:block;overflow:visible} .tick{font-size:9.5px;fill:var(--text-muted)}
+table{border-collapse:collapse;font-size:12px;width:100%}
+th,td{text-align:left;padding:4px 10px 4px 0;border-bottom:1px solid var(--border);white-space:nowrap}
+th{color:var(--text-muted);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em}
+td.n{font-variant-numeric:tabular-nums;text-align:right;padding-right:16px}
+.note{font-size:11.5px;color:var(--text-muted);line-height:1.65;margin-top:14px;max-width:100ch}
+.note b{color:var(--text-secondary)}
+.big{font-size:23px;font-weight:680;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.lg{display:flex;gap:15px;font-size:11.5px;color:var(--text-secondary);margin-top:7px}
+.lg i{width:15px;height:3px;border-radius:2px;display:inline-block;vertical-align:middle;margin-right:5px}
+</style></head><body><div class="viz-root">
+<h1>Full circuits — reading structure instead of norms</h1>
+<p class="sub">Every panel is computed from <b>weights alone</b>, no forward pass. The difference from the composition-score
+view is that nothing is collapsed to a scalar: these are the actual contracted circuit matrices, so you can see
+<i>what</i> the interaction is rather than only <i>how big</i> it is. LayerNorm gain folded, embeddings mean-centred.</p>
+
+<div class="bar">
+  <div class="grp"><button id="play">▶ Play</button><input type="range" id="scrub" min="0" value="0">
+    <span class="step" id="lab"></span></div>
+  <div class="grp"><label>Panel 2 ranked by</label>
+    <button data-sc="diag" aria-pressed="true">weight (diag-z)</button>
+    <button data-sc="abl" aria-pressed="false">ablation Δ abs (causal)</button></div>
+  <div class="grp"><label>Time</label>
+    <button data-warp="0" aria-pressed="true">linear</button>
+    <button data-warp="1" aria-pressed="false">dwell on transition</button></div>
+  <div class="grp"><label>Speed</label>
+    <button data-spd="0.5" aria-pressed="false">0.5×</button>
+    <button data-spd="1" aria-pressed="true">1×</button>
+    <button data-spd="3" aria-pressed="false">3×</button></div>
+  <div class="grp" style="margin-left:auto"><button id="thm">◐ Theme</button></div>
+</div>
+
+<div class="wrap">
+ <div>
+  <div class="card">
+    <h2>1 · Positional QK circuit &nbsp;<code>P̂ W<sub>QK</sub><sup>h</sup> P̂ᵀ</code></h2>
+    <p>Rows = layer, columns = head within that layer. A <b>prev-token head</b> is the tile with a bright
+       stripe just below its main diagonal. Click a tile to select it.</p>
+    <div class="gw">
+      <div class="cband" id="posCB"></div><div class="chead" id="posCH"></div>
+      <div class="rw"><div class="rband" id="posRB"></div><div class="rhead" id="posRH"></div>
+        <div><div class="tilewrap" id="posWrap"><img id="posImg" alt="positional QK circuits, one tile per head"><div class="sel" id="posSel"></div></div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:3px">head within layer →</div></div>
+      </div></div>
+    <div class="note" id="posNote" style="margin-top:9px"></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h2>Prev-token signature over training</h2>
+    <p>Sub-diagonal concentration (z vs. the rest of the causal mask) for the selected head, and its measured
+       prev-token attention score for comparison.</p>
+    <svg id="lnP"></svg>
+    <div class="lg"><span><i style="background:var(--series-1)"></i>sub-diagonal z (weights)</span>
+      <span><i style="background:var(--series-2)"></i>prev-token score (activations)</span></div>
+  </div>
+ </div>
+
+ <div>
+  <div class="card">
+    <h2>2 · Induction full circuit &nbsp;<code>Ê W<sub>QK</sub><sup>dst</sup> W<sub>OV</sub><sup>src</sup> Êᵀ</code></h2>
+    <p><b>Rows = destination</b> (the head doing the reading), deepest layer at the top.
+       <b>Columns = source</b> (the head doing the writing), deepest layer at the left. Every later head reads
+       the whole residual stream, so every source-below-destination cell exists; the hatched block is
+       same-layer and structurally impossible. An <b>induction circuit</b> is a tile with a bright main
+       diagonal — "attend where the previous token equals the current token". Click to select.</p>
+    <div class="gw">
+      <div class="cband" id="indCB"></div><div class="chead" id="indCH"></div>
+      <div class="rw"><div class="rband" id="indRB"></div><div class="rhead" id="indRH"></div>
+        <div><div class="tilewrap" id="indWrap"><img id="indImg" alt="induction full circuits, rows = destination heads, cols = source heads"><div class="sel" id="indSel"></div></div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:3px">source head (writes) →&nbsp;&nbsp;·&nbsp;&nbsp;rows: destination head (reads) ↓</div></div>
+      </div></div>
+    <div class="note" id="indNote" style="margin-top:9px"></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h2>3 · Does the readable statistic beat the norm?</h2>
+    <p>Rank of the true circuit pair by each weight-only statistic, and — separately — the measured
+       causal effect of ablating its source. <b>Only the last one is evidence.</b></p>
+    <div style="display:flex;gap:24px;margin:4px 0 10px;flex-wrap:wrap">
+      <div><div class="big" id="rD" style="color:var(--series-1)"></div>
+        <div style="font-size:11px;color:var(--text-muted)">diagonal z<br>(reads structure)</div></div>
+      <div><div class="big" id="rA" style="color:var(--series-2)"></div>
+        <div style="font-size:11px;color:var(--text-muted)">ablation Δ %/abs<br>(causal ground truth)</div></div>
+      <div><div class="big" id="rF" style="color:var(--text-muted)"></div>
+        <div style="font-size:11px;color:var(--text-muted)">Frobenius<br>(collapses structure)</div></div>
+      <div><div class="big" id="rC" style="color:var(--series-2)"></div>
+        <div style="font-size:11px;color:var(--text-muted)">destination head<br>(column aggregate)</div></div>
+    </div>
+    <div id="tbl"></div>
+    <div class="note" style="margin-top:8px">Ranked by <b>Δ abs</b> — the absolute change in the
+      destination's induction score. <b>*</b> marks a percentage taken against a destination that
+      barely does induction at all (&lt; 0.05, where the floor is ~0.014); those percentages are
+      large because the denominator is tiny, not because anything happened.</div>
+  </div>
+ </div>
+</div>
+<div class="note" id="foot"></div>
+
+<script>
+const D=__DATA__, M=D.meta, H=M.H, N=M.N, PAIRS=M.pairs;
+const nm=i=>`L${Math.floor(i/H)}H${i%H}`, $=s=>document.querySelector(s);
+const L=M.L;
+const SVG="http://www.w3.org/2000/svg", el=(n,a={})=>{const e=document.createElementNS(SVG,n);
+  for(const k in a)e.setAttribute(k,a[k]);return e};
+const T=D.steps.length;
+// Snapshots are NOT evenly spaced in training step -- ~70% of them sit inside the
+// focus window. Playing by snapshot INDEX therefore crawls through the transition
+// and then leaps, and the chart playhead (which lives in step space) never lines
+// up with the slider. Playback is driven by STEP; the index is derived from it.
+function idxOf(step){
+  const xs=D.steps; let a=0,b=T-1;
+  while(a<b){const m=(a+b)>>1; if(xs[m]<step)a=m+1; else b=m;}
+  return (a>0 && Math.abs(xs[a-1]-step)<Math.abs(xs[a]-step))?a-1:a;
+}
+const S={t:T-1,step:D.steps[T-1],head:M.PH,
+         pair:PAIRS.findIndex(p=>p[0]==M.PH&&p[1]==M.IH),playing:0,sc:"diag",speed:1,warp:0};
+
+// The focus window is recoverable from the data itself: the schedule puts ~70% of
+// snapshots uniformly inside it, so the densest contiguous block of indices IS the
+// window. No need for the run to have recorded it.
+const WIN=(()=>{const k=Math.floor(T*0.6); let best=0,bw=Infinity;
+  for(let i=0;i+k<T;i++){const w=D.steps[i+k]-D.steps[i]; if(w<bw){bw=w;best=i;}}
+  return [D.steps[best], D.steps[Math.min(T-1,best+k)]];})();
+// u in [0,1] of playback -> training step. Linear, or the same 20/55/25 warp the
+// film uses, which puts 55% of the running time on the transition window.
+function uToStep(u){
+  const last=D.steps[T-1];
+  if(!S.warp) return u*last;
+  const [w0,w1]=WIN;
+  if(u<0.20) return w0*(u/0.20);
+  if(u<0.75) return w0+(w1-w0)*((u-0.20)/0.55);
+  return w1+(last-w1)*((u-0.75)/0.25);
+}
+// ablation exists only at rendered snapshots -> index by image slot, not by t
+const ablNow=()=>D.abl[imgIdx(S.t)]||[];
+// A PERCENTAGE OF A NEAR-ZERO BASELINE IS NOISE. The induction score floors at about
+// 0.014 (uniform attention over the span), so "-84% of 0.024" is a rounding error
+// wearing a big number. Derive the ABSOLUTE change and rank on that instead.
+const IND_FLOOR=0.05;
+function ablAbs(){
+  const a=ablNow(), tImg=idxOf(D.imgSteps[imgIdx(S.t)]);
+  return a.map((p,i)=>p/100*D.ind[tImg][PAIRS[i][1]]);
+}
+function baseInd(i){ return D.ind[idxOf(D.imgSteps[imgIdx(S.t)])][PAIRS[i][1]]; }
+const scoreNow=()=>S.sc==="abl"?ablAbs():D.pairDiag[S.t];   // abs, not %
+const imgIdx=t=>{let b=0;for(let i=0;i<D.imgSteps.length;i++) if(D.imgSteps[i]<=D.steps[t])b=i; return b};
+
+function headers(pfx,rowIdx,colIdx,tile,rowLab,colLab,bands){
+  const band=(idx,fn)=>{const out=[];let i=0;
+    while(i<idx.length){let j=i;while(j+1<idx.length&&fn(idx[j+1])===fn(idx[i]))j++;
+      out.push([fn(idx[i]),j-i+1]);i=j+1;} return out;};
+  const LY=i=>Math.floor(i/H);
+  const cb=$("#"+pfx+"CB"),ch=$("#"+pfx+"CH"),rb=$("#"+pfx+"RB"),rh=$("#"+pfx+"RH");
+  const GUT=34;
+  cb.style.marginLeft=GUT+"px"; ch.style.marginLeft=GUT+"px";
+  cb.innerHTML=bands?band(colIdx,LY).map(([l,n])=>
+    `<div style="width:${n*tile}px">L${l}</div>`).join(""):"";
+  ch.innerHTML=colIdx.map(i=>`<div style="width:${tile}px">${colLab(i)}</div>`).join("");
+  rb.innerHTML=bands?band(rowIdx,LY).map(([l,n])=>
+    `<div style="height:${n*tile}px;width:15px">L${l}</div>`).join(""):"";
+  const GUT2=bands?34:24; cb.style.marginLeft=GUT2+"px"; ch.style.marginLeft=GUT2+"px";
+  rh.innerHTML=rowIdx.map(i=>`<div style="height:${tile}px;width:19px">${rowLab(i)}</div>`).join("");
+}
+
+function gridPanel2(tile,onPick,curr,scores){
+  const w=$("#indWrap"); w.querySelectorAll(".hit,.top,.blank").forEach(e=>e.remove());
+  const nR=M.gridDst.length,nC=M.gridSrc.length;
+  const order=scores?M.gridCells.filter(c=>c[2]>=0).map(c=>[scores[c[2]],c])
+    .sort((a,b)=>b[0]-a[0]).slice(0,3).map(x=>x[1]):[];
+  for(const [r,c,k] of M.gridCells){
+    const x=c*tile,y=r*tile;
+    if(k<0){const b=document.createElement("div");b.className="blank";
+      b.style.cssText=`left:${x}px;top:${y}px;width:${tile}px;height:${tile}px`;w.appendChild(b);continue;}
+    const h=document.createElement("div"); h.className="hit";
+    h.style.cssText=`left:${x}px;top:${y}px;width:${tile}px;height:${tile}px`;
+    h.title=`${nm(M.gridSrc[c])} -> ${nm(M.gridDst[r])}\n`
+      +`diag-z ${D.pairDiag[S.t][k].toFixed(2)}   ablation ${(ablNow()[k]??0).toFixed(1)}%`;
+    h.onclick=()=>onPick(k); w.appendChild(h);
+  }
+  order.forEach(([r,c],i)=>{const t=document.createElement("div");
+    t.style.cssText=`position:absolute;pointer-events:none;left:${c*tile}px;top:${r*tile}px;width:${tile}px;
+      height:${tile}px;border:2px solid var(--series-2);border-radius:3px;opacity:${1-i*0.28}`;
+    t.className="top"; w.appendChild(t);});
+  const cell=M.gridCells.find(x=>x[2]===curr);
+  if(cell){const s2=$("#indSel");
+    s2.style.cssText=`left:${cell[1]*tile}px;top:${cell[0]*tile}px;width:${tile}px;height:${tile}px`;}
+}
+
+function grid(wrapId,selId,cols,n,tile,onPick,curr,scores,label){
+  const w=$(wrapId); w.querySelectorAll(".hit,.top").forEach(e=>e.remove());
+  const order=scores?scores.map((v,i)=>[v,i]).sort((a,b)=>b[0]-a[0]).slice(0,3).map(x=>x[1]):[];
+  for(let i=0;i<n;i++){const h=document.createElement("div"); h.className="hit";
+    h.style.cssText=`left:${(i%cols)*tile}px;top:${Math.floor(i/cols)*tile}px;width:${tile}px;height:${tile}px`;
+    if(scores) h.title=`${label(i)}   score ${scores[i].toFixed(2)}`;
+    h.onclick=()=>onPick(i); w.appendChild(h);}
+  order.forEach((i,r)=>{const t=document.createElement("div"); t.className="top";
+    t.style.cssText=`position:absolute;pointer-events:none;left:${(i%cols)*tile}px;top:${Math.floor(i/cols)*tile}px;
+      width:${tile}px;height:${tile}px;border:2px solid var(--series-2);border-radius:3px;opacity:${1-r*0.28}`;
+    w.appendChild(t);});
+  const s=$(selId); s.style.cssText=`left:${(curr%cols)*tile}px;top:${Math.floor(curr/cols)*tile}px;
+    width:${tile}px;height:${tile}px`;
+}
+function lines(id,series,fmt){
+  const svg=$(id),W=440,Hh=126,ml=42,mr=14,mt=8,mb=22; svg.textContent="";
+  svg.setAttribute("width",W); svg.setAttribute("height",Hh);
+  const xs=D.steps,xmax=xs[xs.length-1];
+  let lo=Infinity,hi=-Infinity; series.forEach(s=>s.v.forEach(v=>{if(v<lo)lo=v;if(v>hi)hi=v}));
+  if(hi-lo<1e-9)hi=lo+1; const pd=(hi-lo)*.08; lo-=pd; hi+=pd;
+  const X=v=>ml+v/xmax*(W-ml-mr), Y=v=>mt+(1-(v-lo)/(hi-lo))*(Hh-mt-mb);
+  [lo,(lo+hi)/2,hi].forEach(v=>{svg.appendChild(el("line",{x1:ml,x2:W-mr,y1:Y(v),y2:Y(v),
+    stroke:"var(--border)"})); const t=el("text",{x:ml-6,y:Y(v)+3.5,"class":"tick","text-anchor":"end"});
+    t.textContent=fmt(v); svg.appendChild(t)});
+  [0,xmax/2,xmax].forEach(v=>{const t=el("text",{x:X(v),y:Hh-6,"class":"tick","text-anchor":"middle"});
+    t.textContent=v>=1000?v/1000+"k":v; svg.appendChild(t)});
+  const dots=[];
+  series.forEach(s=>{
+    svg.appendChild(el("path",{d:xs.map((x,i)=>(i?"L":"M")+X(x)+" "+Y(s.v[i])).join(" "),
+      fill:"none",stroke:s.c,"stroke-width":2,"stroke-linejoin":"round"}));
+    const c=el("circle",{r:4,fill:s.c,stroke:"var(--surface-2)","stroke-width":2});
+    svg.appendChild(c); dots.push(c);});
+  const ph=el("line",{y1:mt,y2:Hh-mb,stroke:"var(--text-muted)","stroke-dasharray":"3 3"});
+  svg.appendChild(ph);
+  svg.__g={X,Y,series,ph,dots};      // cached so PLAY never rebuilds the chart
+  CHARTS.add(svg); movePH(svg);
+}
+
+const CHARTS=new Set();
+// value at a fractional step, interpolated -> the marker glides instead of hopping
+function at(v,step){
+  const xs=D.steps, i=idxOf2(step);
+  if(i>=T-1) return v[T-1];
+  const f=(step-xs[i])/Math.max(1,xs[i+1]-xs[i]);
+  return v[i]+f*(v[i+1]-v[i]);
+}
+function idxOf2(step){const xs=D.steps;let a=0,b=T-1;
+  while(a<b){const m=(a+b)>>1; if(xs[m]<=step)a=m+1; else b=m;} return Math.max(0,a-1);}
+function movePH(svg){
+  const g=svg.__g; if(!g) return;
+  const x=g.X(S.step);
+  g.ph.setAttribute("x1",x); g.ph.setAttribute("x2",x);
+  g.series.forEach((s,i)=>{g.dots[i].setAttribute("cx",x);
+    g.dots[i].setAttribute("cy",g.Y(at(s.v,S.step)));});
+}
+function movePlayheads(){ CHARTS.forEach(movePH); }
+
+const norm=a=>{const lo=Math.min(...a),hi=Math.max(...a);return a.map(v=>hi-lo<1e-9?0:(v-lo)/(hi-lo))};
+
+let lastImg=-1, lastKey="";
+function label(){
+  $("#lab").textContent=`step ${D.steps[S.t].toLocaleString()} \u00b7 tiles @ ${D.imgSteps[imgIdx(S.t)].toLocaleString()}`;
+  $("#scrub").value=S.step;
+}
+function draw(force){
+  const b=imgIdx(S.t);
+  const key=[b,S.head,S.pair,S.sc].join("|");
+  if(!force && key===lastKey){ movePlayheads(); label(); return; }   // cheap per-frame path
+  lastKey=key; label();
+  if(b!==lastImg){ lastImg=b; $("#posImg").src=D.posImg[b]; $("#indImg").src=D.indImg[b]; }
+  grid("#posWrap","#posSel",6,N,M.tile,i=>{S.head=i;draw(1)},S.head,D.sub[S.t],i=>nm(i));
+  gridPanel2(40,i=>{S.pair=i;draw(1)},S.pair,scoreNow());
+  headers("pos",[...Array(L).keys()].map(l=>l*H),[...Array(H).keys()],M.tile,
+          i=>"L"+Math.floor(i/H),i=>"H"+i,false);
+  headers("ind",M.gridDst,M.gridSrc,40,i=>"H"+(i%H),i=>"H"+(i%H),true);
+  $("#posNote").innerHTML=`Selected <b>${nm(S.head)}</b> — sub-diagonal z <b>${D.sub[S.t][S.head].toFixed(2)}</b>,
+    measured prev-token score <b>${D.prev[S.t][S.head].toFixed(3)}</b>.
+    Strongest prev-token head right now: <b>${nm(D.prev[S.t].indexOf(Math.max(...D.prev[S.t])))}</b>.`;
+  const [s,d]=PAIRS[S.pair];
+  $("#indNote").innerHTML=`Selected <b>${nm(s)} → ${nm(d)}</b> — diagonal z <b>${D.pairDiag[S.t][S.pair].toFixed(2)}</b>,
+    Frobenius composition <b>${D.pairFro[S.t][S.pair].toFixed(3)}</b>.
+    Destination's induction score: <b>${D.ind[S.t][d].toFixed(3)}</b>
+    <span style="color:var(--text-muted)">(a property of ${nm(d)} alone — every pair in this row shares it)</span>.
+    <br><b style="color:var(--series-2)">Ablating ${nm(s)} changes ${nm(d)}'s induction score by
+    ${(ablNow()[S.pair]??0).toFixed(1)}%</b> — this is the causal test; everything else on this page is correlational.`;
+  lines("#lnP",[{v:norm(D.sub.map(r=>r[S.head])),c:"var(--series-1)"},
+                {v:norm(D.prev.map(r=>r[S.head])),c:"var(--series-2)"}],x=>x.toFixed(1));
+  $("#rD").textContent="#"+M.rankDiag; $("#rF").textContent="#"+M.rankFro;
+  $("#rC").textContent="#"+(M.rankCol??"-");
+  const ab2=ablNow(), k2=PAIRS.findIndex(p=>p[0]==M.PH&&p[1]==M.IH);
+  $("#rA").textContent=ab2.length?(ab2[k2]).toFixed(0)+"% / "+(ablAbs()[k2]??0).toFixed(2):"-";
+  const sc=scoreNow(), ab=ablNow(), abA=ablAbs();
+  const rows=PAIRS.map((p,i)=>({p,i,z:sc[i]})).sort((a,b)=>b.z-a.z).slice(0,8);
+  $("#tbl").innerHTML=`<table><thead><tr><th>#</th><th>pair</th><th style="text-align:right">diag z</th><th style="text-align:right">ablation Δ</th><th style="text-align:right">Δ abs</th>
+    <th style="text-align:right">null-z</th><th style="text-align:right">Frobenius</th><th style="text-align:right">dst induction</th></tr></thead><tbody>`+
+    rows.map((r,j)=>`<tr${r.p[0]==M.PH&&r.p[1]==M.IH?' style="font-weight:700"':''}><td>${j+1}</td>
+      <td>${nm(r.p[0])} → ${nm(r.p[1])}</td><td class="n">${D.pairDiag[S.t][r.i].toFixed(2)}</td>
+      <td class="n" style="color:${baseInd(r.i)<IND_FLOOR?"var(--text-muted)":"inherit"}"
+          title="${baseInd(r.i)<IND_FLOOR?"destination barely does induction ("+baseInd(r.i).toFixed(3)+") -- this percentage is of noise":""}"
+          >${(ab[r.i]??0).toFixed(1)}%${baseInd(r.i)<IND_FLOOR?" *":""}</td>
+      <td class="n" style="font-weight:650;color:${(abA[r.i]??0)>0.03?"var(--series-2)":"inherit"}">${(abA[r.i]??0).toFixed(3)}</td>
+      <td class="n">${D.pairNull[S.t][r.i].toFixed(2)}</td><td class="n">${D.pairFro[S.t][r.i].toFixed(3)}</td>
+      <td class="n">${D.ind[S.t][r.p[1]].toFixed(3)}</td></tr>`).join("")+"</tbody></table>";
+}
+$("#scrub").min=0; $("#scrub").max=D.steps[T-1]; $("#scrub").step=1;
+$("#scrub").oninput=e=>{stop();S.step=+e.target.value;S.u=stepToU(S.step);S.t=idxOf(S.step);draw();};
+// invert uToStep so grabbing the slider mid-playback resumes from the right place
+function stepToU(st){
+  const last=D.steps[T-1];
+  if(!S.warp) return st/last;
+  const [w0,w1]=WIN;
+  if(st<w0) return 0.20*(st/Math.max(1,w0));
+  if(st<w1) return 0.20+0.55*((st-w0)/Math.max(1,w1-w0));
+  return 0.75+0.25*((st-w1)/Math.max(1,last-w1));
+}
+document.querySelectorAll("[data-warp]").forEach(b=>b.onclick=()=>{
+  S.warp=+b.dataset.warp; S.u=stepToU(S.step);
+  document.querySelectorAll("[data-warp]").forEach(x=>x.setAttribute("aria-pressed",x===b));});
+document.querySelectorAll("[data-sc]").forEach(b=>b.onclick=()=>{
+  S.sc=b.dataset.sc;document.querySelectorAll("[data-sc]").forEach(x=>x.setAttribute("aria-pressed",x===b));draw(1);});
+$("#thm").onclick=()=>{const d=document.documentElement;
+  d.dataset.theme=(d.dataset.theme==="dark")?"light":"dark";draw(1)};
+// requestAnimationFrame advancing by wall-clock. The old setInterval(60ms) queued
+// up behind a draw() that took longer than 60ms -- that was the stutter.
+const PLAY_SECONDS=45;
+let raf=null, lastT=0;
+function stop(){S.playing=0;$("#play").textContent="\u25B6 Play";
+  if(raf)cancelAnimationFrame(raf); raf=null; lastT=0;}
+function tick(now){
+  if(!S.playing) return;
+  if(!lastT) lastT=now;
+  const dt=Math.min(0.1,(now-lastT)/1000); lastT=now;
+  S.u=(S.u??0)+dt*S.speed/PLAY_SECONDS;
+  if(S.u>=1){S.u=1;S.step=D.steps[T-1];S.t=T-1;draw();stop();return;}
+  S.step=uToStep(S.u);
+  S.t=idxOf(S.step); draw();
+  raf=requestAnimationFrame(tick);
+}
+$("#play").onclick=()=>{
+  if(S.playing){stop();return;}
+  if(S.step>=D.steps[T-1]){S.step=0;S.u=0;}
+  else S.u=stepToU(S.step);
+  S.t=idxOf(S.step); S.playing=1; $("#play").textContent="\u2759\u2759 Pause";
+  raf=requestAnimationFrame(tick);};
+document.querySelectorAll("[data-spd]").forEach(b=>b.onclick=()=>{
+  S.speed=+b.dataset.spd;
+  document.querySelectorAll("[data-spd]").forEach(x=>x.setAttribute("aria-pressed",x===b));});
+
+$("#foot").innerHTML=`<b>Why this exists.</b> The composition score <code>‖W<sub>QK</sub>·W<sub>OV</sub>‖<sub>F</sub></code>
+ asks "is there any interaction?" when the question is "<i>what</i> is the interaction?" — a norm cannot tell a diagonal
+ matrix from a dense one of equal magnitude, and <i>diagonal</i> is exactly what induction looks like. These panels contract
+ the same circuits into interpretable bases (positions, tokens) and keep the matrix, so the structure survives.
+ <br><br><b>All tiles share ONE colour scale.</b> Per-tile normalisation (the earlier default) stretched every tile to its own max, so a pure-noise tile looked exactly as vivid as a structured one and brightness carried no cross-tile information. Orange rings mark the top three tiles by score, so magnitude is never colour-alone. Also: <code>P W<sub>QK</sub> Pᵀ</code> is <i>generically</i> banded near the diagonal because positional embeddings are smooth — many heads will show stripes. The sub-diagonal score therefore contrasts lag-1 against lags 2–8, not against the far triangle, and the pair score is corrected against a random-rotation null that preserves both spectra.<br><br><b>Sampling caveat on the "sharpness".</b> The tiles only update at the rendered snapshots
+ (${D.imgSteps.length} of them), while the curves are drawn from all ${T}. So the transition can look
+ more step-like in the tiles than it is. The line charts are the honest resolution — if it is sharp
+ there too, it is sharp. Densest snapshot region detected at steps
+ ${WIN[0].toLocaleString()}\u2013${WIN[1].toLocaleString()}; "dwell on transition" gives that band 55% of the
+ playback instead of its ${Math.round(100*(WIN[1]-WIN[0])/D.steps[T-1])}% share of the step range.
+ <br><br><b>Read the tiles like this.</b> Panel 1: a bright stripe one below the diagonal = attends to the previous position
+ = prev-token head. Panel 2: a bright main diagonal = attends where the previous token matches the current token = induction.
+ Everything else is noise, and there is a lot of it — that is the honest baseline.
+ <br><br><b>Caveats.</b> LayerNorm's learned gain is folded in and embeddings are mean-centred, but the per-token 1/σ is
+ data-dependent and is not folded — it rescales rows positively, so it moves magnitudes without moving the argmax structure
+ being read. These are structure maps, not exact logits. And these are correlational: to call it a circuit, ablate
+ ${nm(M.PH)} and confirm ${nm(M.IH)}'s pattern collapses.
+ <br><br>seed ${M.seed} · ${M.steps} steps · ${PAIRS.length} causal pairs · vocab ${M.V} · ${N} heads`;
+draw(1);
+</script></div></body></html>
