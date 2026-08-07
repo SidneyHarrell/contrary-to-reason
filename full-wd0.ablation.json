@@ -1,0 +1,7 @@
+{
+ "model": "full-wd0.pt",
+ "induction_head": "L0H5",
+ "base": 0.0882,
+ "rows": [],
+ "joint_drop_pct": 0.0
+}

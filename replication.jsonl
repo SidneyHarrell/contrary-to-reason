@@ -1,0 +1,4 @@
+{"seed": 0, "steps": 8000, "wd": 0.01, "tstar": 1500, "window": [1100, 2570], "circuit": ["L0H4", "L1H0"], "rankDiag": 1, "rankNull": 1, "rankFro": 13, "rankCol": 1, "tripwire": 0.0169, "snaps": 1631}
+{"seed": 1, "steps": 8000, "wd": 0.01, "tstar": 630, "window": [466, 981], "circuit": ["L0H3", "L1H5"], "rankDiag": 1, "rankNull": 1, "rankFro": 3, "rankCol": 1, "tripwire": 0.0116, "snaps": 1195}
+{"seed": 2, "steps": 8000, "wd": 0.01, "tstar": 650, "window": [476, 991], "circuit": ["L0H0", "L1H5"], "rankDiag": 1, "rankNull": 4, "rankFro": 3, "rankCol": 1, "tripwire": 0.0144, "snaps": 1308}
+{"seed": 0, "steps": 8000, "wd": 0.0, "tstar": 1590, "window": [1208, 2409], "circuit": ["L0H3", "L1H0"], "rankDiag": 1, "rankNull": 1, "rankFro": 7, "rankCol": 1, "tripwire": 0.0187, "snaps": 1400}

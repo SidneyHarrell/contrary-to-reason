@@ -1,0 +1,50 @@
+{
+ "model": "full-seed0.pt",
+ "induction_head": "L1H0",
+ "base": 0.4622,
+ "rows": [
+  {
+   "src": "L0H0",
+   "prev": 0.0318,
+   "ind_after": 0.4744,
+   "drop_pct": -2.64,
+   "verdict": "incidental"
+  },
+  {
+   "src": "L0H1",
+   "prev": 0.0072,
+   "ind_after": 0.4665,
+   "drop_pct": -0.93,
+   "verdict": "incidental"
+  },
+  {
+   "src": "L0H2",
+   "prev": 0.1501,
+   "ind_after": 0.4628,
+   "drop_pct": -0.13,
+   "verdict": "incidental"
+  },
+  {
+   "src": "L0H3",
+   "prev": 0.2371,
+   "ind_after": 0.4127,
+   "drop_pct": 10.7,
+   "verdict": "contributes"
+  },
+  {
+   "src": "L0H4",
+   "prev": 0.2673,
+   "ind_after": 0.2855,
+   "drop_pct": 38.23,
+   "verdict": "LOAD-BEARING"
+  },
+  {
+   "src": "L0H5",
+   "prev": 0.0483,
+   "ind_after": 0.4878,
+   "drop_pct": -5.54,
+   "verdict": "incidental"
+  }
+ ],
+ "joint_drop_pct": 93.16
+}

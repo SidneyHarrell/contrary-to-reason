@@ -1,0 +1,226 @@
+==========================================================================
+full-seed0.html   seed 0  ·  8000 steps  ·  wd from run args
+  circuit found: L0H4 -> L1H0    (transition ~step ?, window ?)
+  ranks: diag-z #1  null #1  Frobenius #13  destination-column #1
+  induction score of L1H0: 0.462   (peak over run 0.475)
+  shortcut tripwire (must stay ~0): 0.0169
+
+  TOP 8 BY WEIGHT SCORE (diag-z)            TOP 8 BY ABLATION (causal)
+  ----------------------------------------------------------------------
+  1. L0H4->L1H0 z= 3.17 abl=  67.7%          1. L0H5->L2H1 abl=  80.6% z=-0.86
+  2. L0H4->L1H2 z= 2.68 abl=  71.7%          2. L0H4->L1H2 abl=  71.7% z= 2.68
+  3. L0H3->L1H0 z= 2.60 abl=   2.0%          3. L0H4->L1H1 abl=  70.8% z= 0.41
+  4. L0H2->L1H0 z= 2.40 abl=  -1.1%          4. L0H4->L1H5 abl=  70.2% z= 0.31
+  5. L0H3->L1H2 z= 2.36 abl=   7.3%          5. L0H4->L1H3 abl=  70.1% z= 0.46
+  6. L0H3->L2H1 z= 2.23 abl= -11.3%          6. L0H4->L1H0 abl=  67.7% z= 3.17
+  7. L0H3->L2H2 z= 2.14 abl=  -0.7%          7. L0H4->L1H4 abl=  62.3% z= 0.65
+  8. L0H4->L2H2 z= 2.11 abl=  37.9%          8. L0H5->L2H2 abl=  60.4% z=-0.57
+
+  agreement between weight score and ablation: Spearman rho = +0.075, top-8 overlap 2/8
+    rho near 0 => the weight screen is not finding what actually matters.
+
+  TRAJECTORY of L0H4->L1H0  (rendered snapshots only)
+     step   diag-z   ablation  ind(dst)
+        0    -0.05      -0.1%     0.014
+        3    -0.08      -0.1%     0.014
+       17     0.39      -1.1%     0.015
+       71     0.57      -1.6%     0.015
+      830     1.70       5.4%     0.026
+     1152     2.61      42.8%     0.044
+     1209     2.67      43.1%     0.051
+     1266     2.73      48.4%     0.060
+     1267     2.73      47.8%     0.061
+     1326     2.77      47.8%     0.069
+     1385     2.80      54.7%     0.129
+     1443     2.86      47.6%     0.297
+     1502     2.93      50.5%     0.403
+     1561     2.99      59.2%     0.464
+     1620     3.05      70.1%     0.456
+     1679     3.08      75.4%     0.452
+     1737     3.09      78.7%     0.447
+     1796     3.10      80.7%     0.448
+     1855     3.09      82.2%     0.438
+     1914     3.11      83.1%     0.445
+     1973     3.11      83.5%     0.447
+     2031     3.13      83.5%     0.453
+     2090     3.14      84.3%     0.454
+     2149     3.15      84.3%     0.453
+     2208     3.15      84.4%     0.459
+     2267     3.15      84.5%     0.463
+     2325     3.15      84.5%     0.463
+     2384     3.17      84.3%     0.463
+     2443     3.17      84.3%     0.458
+     2502     3.17      83.6%     0.465
+     2561     3.18      83.8%     0.462
+     5183     3.19      67.7%     0.453
+
+==========================================================================
+full-seed1.html   seed 1  ·  8000 steps  ·  wd from run args
+  circuit found: L0H3 -> L1H5    (transition ~step ?, window ?)
+  ranks: diag-z #1  null #1  Frobenius #3  destination-column #1
+  induction score of L1H5: 0.915   (peak over run 0.932)
+  shortcut tripwire (must stay ~0): 0.0116
+
+  TOP 8 BY WEIGHT SCORE (diag-z)            TOP 8 BY ABLATION (causal)
+  ----------------------------------------------------------------------
+  1. L0H3->L1H5 z= 2.71 abl=  71.2%          1. L0H2->L1H1 abl=  93.2% z= 1.56
+  2. L0H3->L1H0 z= 2.66 abl=  76.7%          2. L0H2->L1H3 abl=  92.0% z= 1.35
+  3. L0H3->L1H2 z= 2.65 abl=  74.1%          3. L0H3->L1H3 abl=  86.4% z= 2.58
+  4. L0H3->L1H1 z= 2.59 abl=  84.9%          4. L0H3->L1H1 abl=  84.9% z= 2.59
+  5. L0H3->L1H3 z= 2.58 abl=  86.4%          5. L1H2->L2H3 abl=  78.9% z=-0.66
+  6. L0H4->L1H2 z= 2.17 abl=  -0.1%          6. L0H3->L1H0 abl=  76.7% z= 2.66
+  7. L0H4->L1H0 z= 2.16 abl=  -0.1%          7. L0H3->L1H2 abl=  74.1% z= 2.65
+  8. L0H4->L1H5 z= 2.11 abl=  -0.0%          8. L0H3->L1H5 abl=  71.2% z= 2.71
+
+  agreement between weight score and ablation: Spearman rho = +0.156, top-8 overlap 5/8
+    rho near 0 => the weight screen is not finding what actually matters.
+
+  TRAJECTORY of L0H3->L1H5  (rendered snapshots only)
+     step   diag-z   ablation  ind(dst)
+        0     0.08       0.1%     0.014
+        1     0.10       0.1%     0.014
+        5     0.25       0.4%     0.015
+       13     0.41       0.2%     0.015
+       32     0.49       0.3%     0.015
+       80     0.48       0.6%     0.016
+      194     0.30       0.6%     0.020
+      465     0.19       1.3%     0.042
+      466     0.20       1.6%     0.043
+      487     0.29       2.0%     0.046
+      507     0.49       2.8%     0.051
+      528     0.70       2.3%     0.053
+      548     0.99       5.5%     0.065
+      569     1.34       8.2%     0.087
+      590     1.66      10.0%     0.158
+      610     1.89       9.6%     0.233
+      631     2.11       8.7%     0.324
+      651     2.22       7.6%     0.391
+      672     2.27       6.3%     0.426
+      693     2.28       6.4%     0.429
+      713     2.30       6.0%     0.435
+      734     2.32       6.3%     0.441
+      754     2.31       6.5%     0.444
+      775     2.34       7.4%     0.451
+      796     2.35       6.9%     0.463
+      816     2.36       7.0%     0.474
+      837     2.36       6.8%     0.476
+      857     2.37       6.2%     0.482
+      878     2.38       6.5%     0.493
+      899     2.40       5.6%     0.497
+      919     2.41       5.5%     0.501
+      940     2.42       4.6%     0.514
+      960     2.43       3.9%     0.508
+      981     2.42       4.3%     0.515
+     1689     2.53       5.1%     0.558
+     2382     2.78      68.0%     0.816
+     3090     2.80      82.2%     0.881
+     3783     2.83      71.8%     0.920
+     4490     2.81      67.9%     0.931
+     5198     2.81      64.9%     0.923
+     5891     2.75      66.8%     0.923
+     6599     2.72      66.8%     0.922
+     7292     2.68      69.0%     0.918
+     8000     2.71      71.2%     0.915
+
+==========================================================================
+full-seed2.html   seed 2  ·  8000 steps  ·  wd from run args
+  circuit found: L0H0 -> L1H5    (transition ~step ?, window ?)
+  ranks: diag-z #1  null #4  Frobenius #3  destination-column #1
+  induction score of L1H5: 0.924   (peak over run 0.945)
+  shortcut tripwire (must stay ~0): 0.0144
+
+  TOP 8 BY WEIGHT SCORE (diag-z)            TOP 8 BY ABLATION (causal)
+  ----------------------------------------------------------------------
+  1. L0H0->L1H5 z= 2.48 abl=  75.0%          1. L0H0->L1H0 abl=  95.7% z= 2.46
+  2. L0H0->L1H2 z= 2.48 abl=  79.0%          2. L0H0->L1H3 abl=  83.4% z= 2.48
+  3. L0H0->L1H3 z= 2.48 abl=  83.4%          3. L1H1->L2H4 abl=  79.0% z= 0.34
+  4. L0H0->L1H1 z= 2.47 abl=  76.4%          4. L0H0->L1H2 abl=  79.0% z= 2.48
+  5. L0H0->L1H0 z= 2.46 abl=  95.7%          5. L0H0->L1H1 abl=  76.4% z= 2.47
+  6. L0H4->L1H2 z= 1.22 abl=  -0.5%          6. L0H5->L1H0 abl=  75.3% z=-0.84
+  7. L1H2->L2H2 z= 1.16 abl=  -4.3%          7. L0H0->L1H5 abl=  75.0% z= 2.48
+  8. L0H0->L1H4 z= 1.16 abl=  21.4%          8. L1H5->L2H2 abl=  68.7% z= 0.55
+
+  agreement between weight score and ablation: Spearman rho = +0.010, top-8 overlap 5/8
+    rho near 0 => the weight screen is not finding what actually matters.
+
+  TRAJECTORY of L0H0->L1H5  (rendered snapshots only)
+     step   diag-z   ablation  ind(dst)
+        0     0.11      -0.0%     0.014
+        1     0.12      -0.0%     0.014
+        5     0.19      -0.1%     0.014
+       13     0.08      -0.2%     0.014
+       33    -0.14      -0.1%     0.014
+       81    -0.17       0.2%     0.014
+      196    -0.38       2.5%     0.016
+      475     0.84      -0.4%     0.022
+      476     0.85      -0.0%     0.022
+      497     0.95       3.2%     0.025
+      517     1.12       7.2%     0.028
+      538     1.28       6.7%     0.031
+      558     1.41       7.2%     0.030
+      579     1.56      17.0%     0.042
+      600     1.74      34.3%     0.064
+      620     1.86      47.9%     0.105
+      641     1.95      57.4%     0.160
+      661     2.02      64.8%     0.237
+      682     2.10      70.7%     0.300
+      703     2.14      73.7%     0.344
+      723     2.19      74.2%     0.354
+      744     2.24      75.8%     0.373
+      764     2.29      77.1%     0.392
+      785     2.31      77.5%     0.412
+      806     2.36      78.0%     0.426
+      826     2.40      77.7%     0.447
+      847     2.41      74.3%     0.466
+      867     2.41      75.9%     0.458
+      888     2.42      73.4%     0.467
+      909     2.43      73.0%     0.476
+      929     2.45      72.2%     0.478
+      950     2.45      71.4%     0.477
+      970     2.46      70.3%     0.494
+      991     2.47      72.4%     0.500
+     1688     2.61      74.1%     0.563
+     2398     2.63      77.5%     0.719
+     3095     2.62      91.1%     0.877
+     3792     2.59      93.5%     0.869
+     4489     2.50      88.2%     0.906
+     5199     2.48      80.6%     0.940
+     5896     2.51      79.2%     0.936
+     6593     2.49      79.0%     0.920
+     7303     2.48      75.7%     0.924
+     8000     2.48      75.0%     0.924
+
+==========================================================================
+full-wd0.html   seed 0  ·  8000 steps  ·  wd from run args
+  circuit found: L0H3 -> L1H0    (transition ~step ?, window ?)
+  ranks: diag-z #1  null #1  Frobenius #7  destination-column #1
+  induction score of L1H0: 0.091   (peak over run 0.428)
+  shortcut tripwire (must stay ~0): 0.0187
+
+  TOP 8 BY WEIGHT SCORE (diag-z)            TOP 8 BY ABLATION (causal)
+  ----------------------------------------------------------------------
+  1. L0H3->L1H0 z= 3.06 abl=  45.9%          1. L0H3->L1H2 abl=  84.4% z= 2.96
+  2. L0H3->L1H2 z= 2.96 abl=  84.4%          2. L1H3->L2H3 abl=  59.8% z=-0.54
+  3. L0H3->L2H1 z= 2.77 abl=  47.0%          3. L0H3->L1H5 abl=  56.5% z= 0.45
+  4. L0H3->L2H2 z= 2.61 abl=  45.3%          4. L0H3->L1H3 abl=  50.2% z= 0.24
+  5. L0H4->L1H0 z= 2.42 abl=   8.4%          5. L1H2->L2H4 abl=  49.0% z=-0.32
+  6. L0H2->L1H0 z= 2.38 abl=  15.4%          6. L0H3->L2H1 abl=  47.0% z= 2.77
+  7. L0H4->L1H2 z= 2.21 abl=   3.1%          7. L0H3->L1H0 abl=  45.9% z= 3.06
+  8. L0H2->L1H2 z= 2.09 abl=  18.1%          8. L0H3->L2H2 abl=  45.3% z= 2.61
+
+  agreement between weight score and ablation: Spearman rho = +0.273, top-8 overlap 4/8
+    rho near 0 => the weight screen is not finding what actually matters.
+
+  TRAJECTORY of L0H3->L1H0  (rendered snapshots only)
+     step   diag-z   ablation  ind(dst)
+        0     0.04      -0.0%     0.014
+      105     0.53      -3.4%     0.015
+     1396     2.71      60.0%     0.063
+     1397     2.71      60.2%     0.063
+     1547     2.84      69.8%     0.113
+     1697     2.87      56.8%     0.409
+     1847     2.90      58.7%     0.395
+     1997     2.93      48.2%     0.393
+     2148     2.91      37.3%     0.379
+     2298     2.93      31.9%     0.404
+     4166     3.00      45.9%     0.319
